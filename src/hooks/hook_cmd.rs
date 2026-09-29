@@ -1192,6 +1192,33 @@ fn droid_response_from_decision(v: &Value, cmd: &str, decision: HookDecision) ->
 }
 
 /// Run the Factory Droid PreToolUse hook natively.
+pub fn run_opencode(cmd: &str, agent: Option<&str>) -> Result<()> {
+    let _ = writeln!(io::stdout(), "{}", opencode_answer(cmd, agent));
+    Ok(())
+}
+
+fn opencode_answer(cmd: &str, agent: Option<&str>) -> Value {
+    if cmd.trim().is_empty() {
+        return json!({});
+    }
+    let verdict = permissions::check_command_for_agent(cmd, permissions::Host::OpenCode, agent);
+    match decide_from_verdict(cmd, verdict) {
+        HookDecision::Deny => {
+            audit_log("deny", cmd, "");
+            json!({ "status": "deny" })
+        }
+        HookDecision::AllowRewrite(rewritten) => {
+            audit_log("rewrite", cmd, &rewritten);
+            json!({ "command": rewritten, "status": "allow" })
+        }
+        HookDecision::AskRewrite(rewritten) => {
+            audit_log("rewrite", cmd, &rewritten);
+            json!({ "command": rewritten, "status": "ask" })
+        }
+        HookDecision::Defer => json!({}),
+    }
+}
+
 pub fn run_droid() -> Result<()> {
     let input = read_stdin_limited()?;
 
