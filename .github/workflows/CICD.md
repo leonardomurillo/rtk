@@ -68,9 +68,6 @@ Trigger: push to develop | workflow_dispatch (not master) | Concurrency: cancel-
      ┌────────▼──────────────────┐
      │ GitHub Release            │
      │ (pre-release badge)       │
-     │                           │
-     │ Discord:  SKIPPED         │
-     │ Homebrew: SKIPPED         │
      └──────────────────────────┘
 ```
 
@@ -107,11 +104,10 @@ Trigger: push to master (only) | Concurrency: never cancelled
                      ┌────────────▼────────────┐
                      │ GitHub Release           │
                      │ (stable, "Latest" badge) │
-                     └──┬─────────┬─────────┬──┘
-                        │         │         │
-                        ▼         ▼         ▼
-                    Discord   Homebrew   latest
-                    notify    tap update  tag
+                     └────────────┬────────────┘
+                                  │
+                                  ▼
+                            latest tag
 ```
 
 ## Manual release (release.yml)
@@ -134,7 +130,6 @@ Trigger: workflow_dispatch
    prerelease=false  prerelease=true
           │             │
           ▼             ▼
-     Discord        pre-release
-     Homebrew       badge only
-     latest tag
+     latest tag     pre-release
+                    badge only
 ```
